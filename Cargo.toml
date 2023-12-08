@@ -1,0 +1,12 @@
+[workspace]
+
+members = [
+    "antigen_test",
+    "hlist_ex",
+    "task_graph",
+    "task_graph_build",
+    "task_graph_proc_macros",
+]
+
+[profile.release]
+debug = true

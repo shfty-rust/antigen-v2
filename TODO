@@ -1,0 +1,55 @@
+Integrate deebs_next
+
+Investigate making entrypoints generic over task graphs
+    Lifetime difficulties with AudioOutput due to static data
+        May need to work around by making the task graph itself static
+
+Investigate decoupling systems from table layout
+    Currently, column types are all defined inline in main.rs by the define_database macro
+    Systems refer to them directly via type aliases
+    One possibility is having components define their columns in the same module
+        Not ideal, since that couples data to database layout
+            Relationship should be established at database definition time
+    System boilerplate should be kept to a minimum
+        Ideally should only care about query structs
+            Can derive view signature and column layout based on the inner type
+            May prove tricky without a trait-centric implementation
+
+Investigate BTreeSet / HashSet collection implementation
+    Useful for ZST tag components
+    Similar interface minus value read/write
+    Should be naturally compatible with HasField, since it skips value reading
+
+Replace println rendering with barebones pancurses implementation
+    Parametrize print output
+        Use a PancursesTag ZST component to opt into rendering
+        (PancursesTag, Position, char) should output a single char
+        (PancursesTag, Position, String) should output a (potentially multi-line) string with no wrapping
+            Use this for debug output
+                Set debug system up to target (DebugTag, String) to write instead of print
+                    Would be good to retain printing functionality
+                    Implement a StandardOutputSystem to target (StandardOutputTag, String) for reading and println on run
+                        May as well implement a StandardInputSystem too; useful for terminal applications
+                            On run, block on stdin and target (StandardInputTag, String) for writing
+    Basic color implementataion
+        Use optional pancurses-specific enum based on built-in colors
+    Expose input by writing to a singleton component
+
+Implement GILRS input module
+
+Port wGPU demo from wgpu-test
+
+Improve OPL2-rs to the point of usability, integrate
+
+Investigate serializing / deserializing of Views using frunk's Serde support
+    Need a nice general API for saving and loading to / from various different formats
+        Remember - Serde and parsing / saving are distinct elements
+    Should provide a nice way to handle save / load, scene composition, etc
+
+Investigate collection and value wrappers for tracking state change
+    Collection wrappers would track insert / remove by Copy or Clone (more likely Clone in deebs' case)
+    Value wrappers would track changes in value, either by Copy or Clone
+    Use two stacks to allow undo/redo
+        Inherent methods for rewinding or advancing state
+    Optional max stack size to prevent (effectively) memory leaking
+    Useful for debugging, netcode, or Prince of Persia: The Sands of Time mechanics
